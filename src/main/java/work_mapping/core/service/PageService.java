@@ -1,4 +1,4 @@
-package work_mapping.core;
+package work_mapping.core.service;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,5 +37,21 @@ public class PageService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public int getCountSearchPage(final String url, final String locationClass) {
+        int count = 1;
+
+        for (int i = 0; i < 10_000; i++) {
+            List<String> list = getStringByClass(url + count, "class", locationClass);
+
+            if (!list.isEmpty()) {
+                count++;
+            } else {
+                break;
+            }
+            System.out.println("new COUNT -> " + (count - 1));
+        }
+        return count - 1;
     }
 }
