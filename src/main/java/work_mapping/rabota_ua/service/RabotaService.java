@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class RabotaService {
     private static final String mainUrl = "https://rabota.ua/jobsearch/vacancy_list?keyWords=Junior+Java+developer&pg=";
-    private static final String titleClass = "f-visited-enable";
+    private static final String titleClass = "f-visited-enable ga_listing";
     private static final String locationClass = "fd-merchant";
     private static final String companyNameClass = "f-vacancylist-companyname fd-merchant f-text-dark-bluegray";
 
@@ -19,23 +19,21 @@ public class RabotaService {
     private PageService pageService = new PageService();
 
     public void startSearching() {
-        int countSearchPage = new PageService().getCountSearchPage(mainUrl, locationClass);
+        int countSearchPage = new PageService().getCountSearchingPage(mainUrl, "class", locationClass);
 
         for (int i = 0; i < countSearchPage; i++) {
-            createVacancy(i + 1);
+            List<String> titles = pageService.getVacancyWithPage(mainUrl + (i + 1), "class", titleClass);
+            List<String> locations = pageService.getVacancyWithPage(mainUrl + (i + 1), "class", locationClass);
+            List<String> companyNames = pageService.getVacancyWithPage(mainUrl + (i + 1), "class", companyNameClass);
+
+            saveVacancies(titles, locations, companyNames);
         }
 
         getSearchResult();
     }
 
-    private void createVacancy(int countPage) {
-        List<String> titles = pageService.getStringByAttributeValueStarting(mainUrl + countPage, "class", titleClass);
-        List<String> locations = pageService.getStringByClass(mainUrl + countPage, "class", locationClass);
-        List<String> companyNames = pageService.getStringByClass(mainUrl + countPage, "class", companyNameClass);
-
+    private void saveVacancies(List<String> titles, List<String> locations, List<String> companyNames) {
         int count = (titles.size() + locations.size() + companyNames.size()) / 3;
-
-        System.out.println("COUNT -->> " + count);
 
         if (!titles.isEmpty() && !locations.isEmpty() && !companyNames.isEmpty()) {
             for (int i = 0; i < count; i++) {

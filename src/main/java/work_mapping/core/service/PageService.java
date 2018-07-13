@@ -8,23 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PageService {
-
-    public List<String> getStringByAttributeValueStarting(String url, String key, String valuePrefix) {
-        try {
-            List<String> list = new ArrayList<>();
-            Document page = Jsoup.connect(url).get();
-            Elements elementsByAttributeValueStarting = page.getElementsByAttributeValueStarting(key, valuePrefix);
-
-            elementsByAttributeValueStarting.forEach(element -> list.add(element.text()));
-
-            return list;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<String> getStringByClass(String url, String key, String valuePrefix) {
+    public List<String> getAttrValueByClass(String url, String key, String valuePrefix) {
         try {
             List<String> list = new ArrayList<>();
             Document page = Jsoup.connect(url).get();
@@ -39,19 +23,45 @@ public class PageService {
         return null;
     }
 
-    public int getCountSearchPage(final String url, final String locationClass) {
+    public int getCountSearchingPage(final String url, final String tagKey, final String locationClass) {
         int count = 1;
 
         for (int i = 0; i < 10_000; i++) {
-            List<String> list = getStringByClass(url + count, "class", locationClass);
+            List<String> list = getAttrValueByClass(url + count, tagKey, locationClass);
 
             if (!list.isEmpty()) {
                 count++;
             } else {
                 break;
             }
-            System.out.println("new COUNT -> " + (count - 1));
         }
         return count - 1;
+    }
+
+    public List<String> getIdValuesByTag(String url, String classValue, String tagName) {
+        List<String> idValues = new ArrayList<>();
+
+        try {
+            Document document = Jsoup.connect(url).get();
+            Elements table = document.getElementsByClass(classValue);
+
+            table.forEach(element -> {
+                Elements tr = element.getElementsByTag(tagName);
+
+                tr.forEach(element1 -> element1.attributes().forEach(attribute -> {
+                    if (attribute.getKey().equals("id")) {
+                        idValues.add(attribute.getValue());
+                    }
+                }));
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return idValues;
+    }
+
+    public List<String> getVacancyWithPage(final String url, final String attrKey, final String attrValue) {
+        return getAttrValueByClass(url, attrKey, attrValue);
     }
 }
