@@ -1,4 +1,4 @@
-package work_mapping.rabota_ua;
+package work_mapping.rabota_ua.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
