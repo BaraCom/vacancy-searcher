@@ -1,36 +1,22 @@
 package work_mapping.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import work_mapping.rabota_ua.entity.Rabota;
-import work_mapping.rabota_ua.repository.RabotaRepository;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import static work_mapping.core.Vacancies.getVacancies;
 
 public class Saver {
-
-//    @Autowired
-    private RabotaRepository rabotaRepository = new RabotaRepository();
-
-    public void writesToFile(final Map<Rabota, LocalDate> vacancies) {
+    public void writesToFile() {
         AtomicInteger counter = new AtomicInteger();
         counter.lazySet(1);
 
-//        Map<Rabota, LocalDate> vacancies = rabotaRepository.getVacancies();
-
-//        rabotaRepository.getVacancies().forEach((rabota, localDate) -> {
-        vacancies.forEach((rabota, localDate) -> {
-
-            try (FileWriter fileWriter = new FileWriter(localDate + ".docs", true)) {
+        getVacancies().forEach((vacancy) -> {
+            try (FileWriter fileWriter = new FileWriter(LocalDate.now() + ".docs", true)) {
                 fileWriter.write("            " + counter + ".\n"
-                                + rabota.getVacancyTitle() + "\n"
-                                + rabota.getLocation()     + "\n"
-                                + rabota.getCompanyName()  + "\n"
+                                + vacancy.getVacancyTitle() + "\n"
+                                + vacancy.getLocation()     + "\n"
+                                + vacancy.getCompanyName()  + "\n"
 //                                   + rabota.getCompanyLink() + "\n"
 //                                   + rabota.getDescription() + "\n"
                                 + "-------------------------------------------------------------------------\n"
@@ -41,13 +27,5 @@ public class Saver {
                 e.printStackTrace();
             }
         });
-
-        /*rabotaRepository.getVacancies()
-                .forEach((rabota, date) ->
-                    System.out.println(rabota.getVacancyTitle() +  " | " +
-                                       rabota.getLocation()     +  " | " +
-                                       rabota.getCompanyName()  +  " | " +
-                                       date)
-        );*/
     }
 }

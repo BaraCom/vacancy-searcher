@@ -1,4 +1,4 @@
-package work_mapping.rabota_ua.entity;
+package work_mapping.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Rabota {
+public class Vacancy {
     private String vacancyTitle;
     private String location;
     private String companyName;

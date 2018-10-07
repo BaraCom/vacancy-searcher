@@ -2,15 +2,11 @@ package work_mapping.core.service;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.jsoup.Jsoup.connect;
 
-//@Service
 public class PageService {
     public List<String> getAttrValueByClass(String url, String key, String valuePrefix) {
         try {
