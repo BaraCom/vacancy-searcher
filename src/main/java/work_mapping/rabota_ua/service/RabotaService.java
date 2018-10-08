@@ -1,11 +1,18 @@
 package work_mapping.rabota_ua.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import work_mapping.core.IWorkSearcher;
 import work_mapping.core.Vacancy;
 import work_mapping.core.service.PageService;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.jsoup.Jsoup.connect;
 
 @Slf4j
 public class RabotaService extends IWorkSearcher {
@@ -25,20 +32,24 @@ public class RabotaService extends IWorkSearcher {
             List<String> titles = pageService.getVacancyWithPage(mainUrl + (i + 1), "class", titleClass);
             List<String> locations = pageService.getVacancyWithPage(mainUrl + (i + 1), "class", locationClass);
             List<String> companyNames = pageService.getVacancyWithPage(mainUrl + (i + 1), "class", companyNameClass);
+            List<String> vacancyDescUrl = getVacancyDescUrl(mainUrl + (i + 1), "class", titleClass);
 
-            saveVacancies(titles, locations, companyNames);
+            saveVacancies(titles, locations, companyNames, vacancyDescUrl);
         }
 
         return vacanciesByRabota;
     }
 
     @Override
-    protected void saveVacancies(final List<String> titles, final List<String> locations, final List<String> companyNames) {
-        int count = (titles.size() + locations.size() + companyNames.size()) / 3;
+    protected void saveVacancies(final List<String> titles
+                               , final List<String> locations
+                               , final List<String> companyNames
+                               , final List<String> vacancyUrls) {
+        int count = (titles.size() + locations.size() + companyNames.size() + vacancyUrls.size()) / 4;
 
-        if (!titles.isEmpty() && !locations.isEmpty() && !companyNames.isEmpty()) {
+        if (!titles.isEmpty() && !locations.isEmpty() && !companyNames.isEmpty() && !vacancyUrls.isEmpty()) {
             for (int i = 0; i < count; i++) {
-                vacanciesByRabota.add(new Vacancy(titles.get(i), locations.get(i), companyNames.get(i)));
+                vacanciesByRabota.add(new Vacancy(titles.get(i), locations.get(i), companyNames.get(i), vacancyUrls.get(i)));
             }
         } else {
             log.info("Some list is empty.");
@@ -51,8 +62,22 @@ public class RabotaService extends IWorkSearcher {
 
         vacanciesByRabota.forEach(
                 vacancy -> System.out.println(vacancy.getVacancyTitle() +  " | " +
-                                             vacancy.getLocation()     +  " | " +
-                                             vacancy.getCompanyName()  +  " | "
+                                              vacancy.getLocation()     +  " | " +
+                                              vacancy.getCompanyName()  +  " | "
         ));
+    }
+
+    private List<String> getVacancyDescUrl(final String url, final String attrKey, final String attrValue) {
+        List<String> vacancyDescUrls = new ArrayList<>();
+
+        try {
+            Document document = connect(url).get();
+
+            Elements elementsByClass = document.getElementsByAttributeValue(attrKey, attrValue);
+            elementsByClass.forEach(element -> vacancyDescUrls.add(element.attr("href")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return vacancyDescUrls;
     }
 }

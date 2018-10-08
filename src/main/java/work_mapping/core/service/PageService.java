@@ -9,8 +9,9 @@ import static org.jsoup.Jsoup.connect;
 
 public class PageService {
     public List<String> getAttrValueByClass(String url, String key, String valuePrefix) {
+        List<String> list = new ArrayList<>();
+
         try {
-            List<String> list = new ArrayList<>();
             Document page = connect(url).get();
             Elements elementsByAttributeValueStarting = page.getElementsByAttributeValue(key, valuePrefix);
 

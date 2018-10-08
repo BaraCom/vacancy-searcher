@@ -13,4 +13,5 @@ public class Vacancy {
     private String vacancyTitle;
     private String location;
     private String companyName;
+    private String vacancyDescUrl;
 }

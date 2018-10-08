@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Vacancies {
+    private String vacancyDescUrl = "https://rabota.ua";
     private static List<Vacancy> vacancies = new LinkedList<>();
 
     public void showVacancies() {
@@ -15,5 +16,15 @@ public class Vacancies {
         vacancies.addAll(new RabotaService().searchThroughPages());
 
         return vacancies;
+    }
+
+    public void getMoreInfoAboutVacancy(final Vacancy vacancy) {
+        getVacancies().forEach(currentVacancy -> {
+            if (currentVacancy.equals(vacancy)) {
+                vacancyDescUrl += currentVacancy.getVacancyDescUrl();
+
+
+            }
+        });
     }
 }
